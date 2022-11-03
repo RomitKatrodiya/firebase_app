@@ -10,6 +10,7 @@ void main() async {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: "login_page",
       routes: {
         "/": (context) => const HomePage(),
         "login_page": (context) => const LoginPage(),
