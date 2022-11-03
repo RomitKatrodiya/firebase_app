@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_app/helpers/cloud_firestore_helper.dart';
 import 'package:firebase_app/helpers/firebase_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +51,37 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: Container(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          CloudFirestoreHelper.cloudFirestoreHelper.insertData();
+        },
+        child: Icon(Icons.add),
+      ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: CloudFirestoreHelper.cloudFirestoreHelper.selectRecords(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text(snapshot.error.toString()));
+          } else if (snapshot.hasData) {
+            List<QueryDocumentSnapshot> data = snapshot.data!.docs;
+
+            return ListView.builder(
+                itemCount: data.length,
+                itemBuilder: (context, i) {
+                  return Card(
+                    elevation: 3,
+                    child: ListTile(
+                      leading: Text("${i + 1}"),
+                      title: Text("${data[i]["name"]}"),
+                      subtitle: Text("${data[i]["city"]}"),
+                      trailing: Text("Age : ${data[i]["age"]}"),
+                    ),
+                  );
+                });
+          }
+          return const Center(child: CircularProgressIndicator());
+        },
+      ),
     );
   }
 }
