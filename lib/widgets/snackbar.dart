@@ -25,3 +25,19 @@ snackBar(
     );
   }
 }
+
+connectionSnackBar({required BuildContext context}) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.red,
+      content: Row(
+        children: const [
+          Icon(Icons.wifi_off, color: Colors.white),
+          SizedBox(width: 10),
+          Text("No Internet Connection Available"),
+        ],
+      ),
+    ),
+  );
+}

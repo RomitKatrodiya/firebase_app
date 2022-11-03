@@ -2,6 +2,7 @@ import 'package:firebase_app/helpers/firebase_helper.dart';
 import 'package:firebase_app/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -33,9 +34,18 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             ElevatedButton(
               onPressed: () async {
-                User? user =
-                    await FireBaseHelper.fireBaseHelper.signInAnonymously();
-                snackBar(user: user, context: context, name: "Login");
+                ConnectivityResult connectivityResult =
+                    await (Connectivity().checkConnectivity());
+
+                if (connectivityResult == ConnectivityResult.mobile ||
+                    connectivityResult == ConnectivityResult.wifi) {
+                  User? user =
+                      await FireBaseHelper.fireBaseHelper.signInAnonymously();
+
+                  snackBar(user: user, context: context, name: "Login");
+                } else if (connectivityResult == ConnectivityResult.none) {
+                  connectionSnackBar(context: context);
+                }
               },
               child: const Text("Anonymously"),
             ),
@@ -44,12 +54,32 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: () => singUpAndSingIn(isSingIn: false),
+                  onPressed: () async {
+                    ConnectivityResult connectivityResult =
+                        await (Connectivity().checkConnectivity());
+
+                    if (connectivityResult == ConnectivityResult.mobile ||
+                        connectivityResult == ConnectivityResult.wifi) {
+                      singUpAndSingIn(isSingIn: false);
+                    } else if (connectivityResult == ConnectivityResult.none) {
+                      connectionSnackBar(context: context);
+                    }
+                  },
                   child: const Text("Sing up"),
                 ),
                 const SizedBox(width: 20),
                 ElevatedButton(
-                  onPressed: () => singUpAndSingIn(isSingIn: true),
+                  onPressed: () async {
+                    ConnectivityResult connectivityResult =
+                        await (Connectivity().checkConnectivity());
+
+                    if (connectivityResult == ConnectivityResult.mobile ||
+                        connectivityResult == ConnectivityResult.wifi) {
+                      singUpAndSingIn(isSingIn: true);
+                    } else if (connectivityResult == ConnectivityResult.none) {
+                      connectionSnackBar(context: context);
+                    }
+                  },
                   child: const Text("Sing in"),
                 ),
               ],
@@ -57,9 +87,17 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                User? user =
-                    await FireBaseHelper.fireBaseHelper.signInWithGoogle();
-                snackBar(user: user, context: context, name: "Login");
+                ConnectivityResult connectivityResult =
+                    await (Connectivity().checkConnectivity());
+
+                if (connectivityResult == ConnectivityResult.mobile ||
+                    connectivityResult == ConnectivityResult.wifi) {
+                  User? user =
+                      await FireBaseHelper.fireBaseHelper.signInWithGoogle();
+                  snackBar(user: user, context: context, name: "Login");
+                } else if (connectivityResult == ConnectivityResult.none) {
+                  connectionSnackBar(context: context);
+                }
               },
               child: const Text("Continue with Google"),
             ),
