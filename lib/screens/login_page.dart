@@ -43,11 +43,11 @@ class _LoginPageState extends State<LoginPage> {
                       await FireBaseHelper.fireBaseHelper.signInAnonymously();
 
                   snackBar(user: user, context: context, name: "Login");
-                } else if (connectivityResult == ConnectivityResult.none) {
+                } else {
                   connectionSnackBar(context: context);
                 }
               },
-              child: const Text("Anonymously"),
+              child: const Text("Anonymously Login"),
             ),
             const SizedBox(height: 20),
             Row(
@@ -61,13 +61,13 @@ class _LoginPageState extends State<LoginPage> {
                     if (connectivityResult == ConnectivityResult.mobile ||
                         connectivityResult == ConnectivityResult.wifi) {
                       singUpAndSingIn(isSingIn: false);
-                    } else if (connectivityResult == ConnectivityResult.none) {
+                    } else {
                       connectionSnackBar(context: context);
                     }
                   },
                   child: const Text("Sing up"),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 15),
                 ElevatedButton(
                   onPressed: () async {
                     ConnectivityResult connectivityResult =
@@ -76,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                     if (connectivityResult == ConnectivityResult.mobile ||
                         connectivityResult == ConnectivityResult.wifi) {
                       singUpAndSingIn(isSingIn: true);
-                    } else if (connectivityResult == ConnectivityResult.none) {
+                    } else {
                       connectionSnackBar(context: context);
                     }
                   },
@@ -95,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
                   User? user =
                       await FireBaseHelper.fireBaseHelper.signInWithGoogle();
                   snackBar(user: user, context: context, name: "Login");
-                } else if (connectivityResult == ConnectivityResult.none) {
+                } else {
                   connectionSnackBar(context: context);
                 }
               },
@@ -112,6 +112,7 @@ class _LoginPageState extends State<LoginPage> {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Center(
           child: Text((isSingIn) ? "Sing In" : "Sing Up"),
         ),
@@ -145,6 +146,7 @@ class _LoginPageState extends State<LoginPage> {
         ),
         actions: [
           ElevatedButton(
+            style: ElevatedButton.styleFrom(shape: const StadiumBorder()),
             onPressed: () async {
               if (formKey.currentState!.validate()) {
                 formKey.currentState!.save();
@@ -166,6 +168,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Text((isSingIn) ? "Sing In" : "Sing Up"),
           ),
           OutlinedButton(
+            style: OutlinedButton.styleFrom(shape: const StadiumBorder()),
             onPressed: () {
               Navigator.of(context).pop();
             },

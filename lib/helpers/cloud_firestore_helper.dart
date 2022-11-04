@@ -7,22 +7,48 @@ class CloudFirestoreHelper {
 
   static final FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
   late CollectionReference studentsRef;
+  late CollectionReference counterRef;
 
   connectionWithStudentsCollection() {
     studentsRef = firebaseFirestore.collection('students');
   }
 
-  Future<void> insertData() async {
+  connectionWithCounterCollection() {
+    counterRef = firebaseFirestore.collection('counters');
+  }
+
+  Future<void> insertData({required Map<String, dynamic> data}) async {
+    connectionWithCounterCollection();
     connectionWithStudentsCollection();
-    await studentsRef.doc("4").set({
-      "name": "Romit",
-      "age": 10,
-      "city": "Surat",
-    });
+
+    DocumentSnapshot documentSnapshot =
+        await counterRef.doc("students_counter").get();
+
+    Map<String, dynamic> counterData =
+        documentSnapshot.data() as Map<String, dynamic>;
+
+    int counter = counterData["counter"];
+
+    await studentsRef.doc("${++counter}").set(data);
+
+    await counterRef.doc("students_counter").update({"counter": counter});
   }
 
   Stream<QuerySnapshot<Object?>> selectRecords() {
     connectionWithStudentsCollection();
     return studentsRef.snapshots();
+  }
+
+  Future<void> updateRecords(
+      {required String id, required Map<String, dynamic> data}) async {
+    connectionWithStudentsCollection();
+
+    studentsRef.doc(id).update(data);
+  }
+
+  Future<void> deleteRecords({required String id}) async {
+    connectionWithStudentsCollection();
+
+    studentsRef.doc(id).delete();
   }
 }
