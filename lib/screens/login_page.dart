@@ -1,8 +1,10 @@
 import 'package:firebase_app/helpers/firebase_helper.dart';
+import 'package:firebase_app/helpers/local_notification_helper.dart';
 import 'package:firebase_app/widgets/snackbar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -21,6 +23,20 @@ class _LoginPageState extends State<LoginPage> {
   String? password;
 
   @override
+  void initState() {
+    super.initState();
+    var initializationSettingsAndroid =
+        const AndroidInitializationSettings('mipmap/ic_launcher');
+    var initializationSettingsIOs = const DarwinInitializationSettings();
+    var initSettings = InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOs);
+
+    LocalNotificationHelper.flutterLocalNotificationsPlugin.initialize(
+        initSettings,
+        onDidReceiveNotificationResponse: (NotificationResponse response) {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -29,79 +45,129 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: Container(
         alignment: Alignment.center,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () async {
-                ConnectivityResult connectivityResult =
-                    await (Connectivity().checkConnectivity());
-
-                if (connectivityResult == ConnectivityResult.mobile ||
-                    connectivityResult == ConnectivityResult.wifi) {
-                  User? user =
-                      await FireBaseHelper.fireBaseHelper.signInAnonymously();
-
-                  snackBar(user: user, context: context, name: "Login");
-                } else {
-                  connectionSnackBar(context: context);
-                }
-              },
-              child: const Text("Anonymously Login"),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () async {
-                    ConnectivityResult connectivityResult =
-                        await (Connectivity().checkConnectivity());
-
-                    if (connectivityResult == ConnectivityResult.mobile ||
-                        connectivityResult == ConnectivityResult.wifi) {
-                      singUpAndSingIn(isSingIn: false);
-                    } else {
-                      connectionSnackBar(context: context);
-                    }
-                  },
-                  child: const Text("Sing up"),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 30),
+              const Text(
+                "Flutter Local Notification",
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.red,
+                  fontWeight: FontWeight.w600,
                 ),
-                const SizedBox(width: 15),
-                ElevatedButton(
-                  onPressed: () async {
-                    ConnectivityResult connectivityResult =
-                        await (Connectivity().checkConnectivity());
+              ),
+              const SizedBox(height: 15),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red, foregroundColor: Colors.white),
+                onPressed: () async {
+                  await LocalNotificationHelper.localNotificationHelper
+                      .simpleNotification();
+                },
+                child: const Text("Simple Notification"),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red, foregroundColor: Colors.white),
+                onPressed: () async {
+                  await LocalNotificationHelper.localNotificationHelper
+                      .scheduleNotification();
+                },
+                child: const Text("Schedule Notification"),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red, foregroundColor: Colors.white),
+                onPressed: () async {
+                  await LocalNotificationHelper.localNotificationHelper
+                      .bigPictureNotification();
+                },
+                child: const Text("Big Picture Notification"),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red, foregroundColor: Colors.white),
+                onPressed: () async {
+                  await LocalNotificationHelper.localNotificationHelper
+                      .mediaStyleNotification();
+                },
+                child: const Text("Media Style Notification"),
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: () async {
+                  ConnectivityResult connectivityResult =
+                      await (Connectivity().checkConnectivity());
 
-                    if (connectivityResult == ConnectivityResult.mobile ||
-                        connectivityResult == ConnectivityResult.wifi) {
-                      singUpAndSingIn(isSingIn: true);
-                    } else {
-                      connectionSnackBar(context: context);
-                    }
-                  },
-                  child: const Text("Sing in"),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () async {
-                ConnectivityResult connectivityResult =
-                    await (Connectivity().checkConnectivity());
+                  if (connectivityResult == ConnectivityResult.mobile ||
+                      connectivityResult == ConnectivityResult.wifi) {
+                    User? user =
+                        await FireBaseHelper.fireBaseHelper.signInAnonymously();
 
-                if (connectivityResult == ConnectivityResult.mobile ||
-                    connectivityResult == ConnectivityResult.wifi) {
-                  User? user =
-                      await FireBaseHelper.fireBaseHelper.signInWithGoogle();
-                  snackBar(user: user, context: context, name: "Login");
-                } else {
-                  connectionSnackBar(context: context);
-                }
-              },
-              child: const Text("Continue with Google"),
-            ),
-          ],
+                    snackBar(user: user, context: context, name: "Login");
+                  } else {
+                    connectionSnackBar(context: context);
+                  }
+                },
+                child: const Text("Anonymously Login"),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      ConnectivityResult connectivityResult =
+                          await (Connectivity().checkConnectivity());
+
+                      if (connectivityResult == ConnectivityResult.mobile ||
+                          connectivityResult == ConnectivityResult.wifi) {
+                        singUpAndSingIn(isSingIn: false);
+                      } else {
+                        connectionSnackBar(context: context);
+                      }
+                    },
+                    child: const Text("Sing up"),
+                  ),
+                  const SizedBox(width: 15),
+                  ElevatedButton(
+                    onPressed: () async {
+                      ConnectivityResult connectivityResult =
+                          await (Connectivity().checkConnectivity());
+
+                      if (connectivityResult == ConnectivityResult.mobile ||
+                          connectivityResult == ConnectivityResult.wifi) {
+                        singUpAndSingIn(isSingIn: true);
+                      } else {
+                        connectionSnackBar(context: context);
+                      }
+                    },
+                    child: const Text("Sing in"),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  ConnectivityResult connectivityResult =
+                      await (Connectivity().checkConnectivity());
+
+                  if (connectivityResult == ConnectivityResult.mobile ||
+                      connectivityResult == ConnectivityResult.wifi) {
+                    User? user =
+                        await FireBaseHelper.fireBaseHelper.signInWithGoogle();
+                    snackBar(user: user, context: context, name: "Login");
+                  } else {
+                    connectionSnackBar(context: context);
+                  }
+                },
+                child: const Text("Continue with Google"),
+              ),
+              const SizedBox(height: 30),
+            ],
+          ),
         ),
       ),
     );
@@ -112,6 +178,7 @@ class _LoginPageState extends State<LoginPage> {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        scrollable: true,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Center(
           child: Text((isSingIn) ? "Sing In" : "Sing Up"),

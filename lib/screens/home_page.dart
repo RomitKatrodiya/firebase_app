@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: () {
           insertAndUpdateRecord(isUpdate: false);
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: CloudFirestoreHelper.cloudFirestoreHelper.selectRecords(),
@@ -132,6 +132,7 @@ class _HomePageState extends State<HomePage> {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        scrollable: true,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title:
             Center(child: Text((isUpdate) ? "Update Record" : "Insert Record")),
